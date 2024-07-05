@@ -51,11 +51,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Set environment variables
-        run: echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+      - name: Get release version
+        id: get_release
+        run: |
+          VERSION=$(echo '${{ github.event.release.tag_name }}')
+          echo "RELEASE_VERSION=${VERSION}" >> $GITHUB_ENV
       - name: Install dependencies
         run: pip install twine wheel
       - name: Build package
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: |
           rm -f dist/*
           python setup.py sdist bdist_wheel
@@ -76,11 +81,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Set environment variables
-        run: echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+      - name: Get release version
+        id: get_release
+        run: |
+          VERSION=$(echo '${{ github.event.release.tag_name }}')
+          echo "RELEASE_VERSION=${VERSION}" >> $GITHUB_ENV
       - name: Install dependencies
         run: pip install twine wheel
       - name: Build package
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: |
           rm -f dist/*
           python setup.py sdist bdist_wheel
