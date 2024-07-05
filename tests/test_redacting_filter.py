@@ -3,6 +3,7 @@ import pytest
 import logging
 import logredactor
 
+
 @pytest.fixture
 def logger_setup(request):
     def get_logger(filters):
@@ -77,6 +78,28 @@ def test_extra_do_not_redact_key(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
     logger.warning("foo", extra={'thing987': 'foobar'})
     assert caplog.records[0].thing987 == "foobar"
+
+
+def test_extra_nested_dict_with_list(caplog, logger_setup):
+    logger = logger_setup([re.compile(r'\d{3}')])
+    extra_data = {
+        'bar': {
+            'thing': ['one', '456'],
+        },
+    }
+    logger.warning("foo", extra=extra_data)
+    assert caplog.records[0].bar['thing'][0] == 'one'
+    assert caplog.records[0].bar['thing'][1] == '****'
+
+
+def test_match_group(caplog, logger_setup):
+    # Nothing in the code has to change
+    # But this shows the use of a Positive Lookbehind
+    # https://www.regextutorial.org/positive-and-negative-lookbehind-assertions.php
+    logger = logger_setup([re.compile(r'(?<=api_key=)[\w-]+')])
+    logger.warning("example.com?api_key=this-is-my-key&sort=price")
+    assert caplog.records[0].message == "example.com?api_key=****&sort=price"
+
 
 
 def test_extra_do_redact_specific_key(caplog, logger_setup):
