@@ -15,7 +15,7 @@ class RedactingFilter(logging.Filter):
         super(RedactingFilter, self).__init__()
         self._patterns = patterns
         self._default_mask = str(default_mask)
-        self._mask_keys = set(mask_keys)
+        self._mask_keys = set(mask_keys or {})
 
     def filter(self, record):
         d = vars(record)
