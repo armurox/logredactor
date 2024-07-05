@@ -8,7 +8,6 @@ on:
 
 jobs:
   test-pytest:
-    needs: tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +25,6 @@ jobs:
         run: tox -e py37
 
   test-flake8:
-    needs: tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -43,26 +41,27 @@ jobs:
       - name: Run flake8
         run: tox -e flake8
 
-    tag:
-      if: github.event_name == 'release'
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v2
-        - name: Set up Git config
-          run: |
-            git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
-            git config --global user.name "${{ secrets.GIT_USER_NAME }}"
-        - name: Get release title and version
-          id: get_release
-          run: |
-            VERSION=$(echo '${{ github.event.release.name }}' | tr ' ' '-')
-            echo "RELEASE_VERSION=${VERSION}" >> $GITHUB_ENV
-        - name: Create tag
-          run: |
-            git tag -a "${{ env.RELEASE_VERSION }}" -m "Version ${{ env.RELEASE_VERSION }} created by GitHub Actions"
-            git push origin "${{ env.RELEASE_VERSION }}"
-  
+  tag:
+    needs: [test-pytest, test-flake8]
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Set up Git config
+        run: |
+          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
+      - name: Get release title and version
+        id: get_release
+        run: |
+          VERSION=$(echo '${{ github.event.release.name }}' | tr ' ' '-')
+          echo "RELEASE_VERSION=${VERSION}" >> $GITHUB_ENV
+      - name: Create tag
+        run: |
+          git tag -a "${{ env.RELEASE_VERSION }}" -m "Version ${{ env.RELEASE_VERSION }} created by GitHub Actions"
+          git push origin "${{ env.RELEASE_VERSION }}"
+
   testpypi-package:
     if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
     needs: tag
