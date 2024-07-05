@@ -51,20 +51,17 @@ jobs:
           git config --global user.name "${{ secrets.GIT_USER_NAME }}"
       - name: Get version from setup.py
         id: get_version
-        run: echo "::set-output name=version::$(python setup.py --version)"
-      - name: Check if tag exists
-        id: check_tag
         run: |
-          if git rev-parse "refs/tags/${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
-            echo "tag_exists=true" >> $GITHUB_ENV
-          else
-            echo "tag_exists=false" >> $GITHUB_ENV
-          fi
+          VERSION=$(python setup.py --version)
+          echo "::set-output name=version::$VERSION"
       - name: Create tag
-        if: env.tag_exists == 'false'
         run: |
-          git tag -a ${{ steps.get_version.outputs.version }} -m "Version created by GitHub Actions"
-          git push origin ${{ steps.get_version.outputs.version }}
+          if ! git rev-parse "refs/tags/${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+            git tag -a ${{ steps.get_version.outputs.version }} -m "Version created by GitHub Actions"
+            git push origin ${{ steps.get_version.outputs.version }}
+          else
+            echo "Tag ${{ steps.get_version.outputs.version }} already exists, skipping creation."
+          fi
 
   testpypi-package:
     if: github.event_name == 'release'
