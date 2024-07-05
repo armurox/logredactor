@@ -13,7 +13,7 @@ def logger_setup(request):
             logredactor.RedactingFilter(
                 filters,
                 default_mask='****',
-                mask_keys={'phonenumber'}
+                mask_keys={'phonenumber',}
             )
         )
         return logger
@@ -99,7 +99,6 @@ def test_match_group(caplog, logger_setup):
     logger = logger_setup([re.compile(r'(?<=api_key=)[\w-]+')])
     logger.warning("example.com?api_key=this-is-my-key&sort=price")
     assert caplog.records[0].message == "example.com?api_key=****&sort=price"
-
 
 
 def test_extra_do_redact_specific_key(caplog, logger_setup):
