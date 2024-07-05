@@ -43,9 +43,9 @@ class RedactingFilter(logging.Filter):
             elif isinstance(content, (list, tuple)):
                 for i, v in enumerate(content):
                     content[i] = self.redact(v)
-            
+
             elif key in self._mask_keys:
-                    content = self._default_mask
+                content = self._default_mask
 
             else:
                 content = isinstance(content, str) and content or str(content)

@@ -13,7 +13,7 @@ def logger_setup(request):
             loggingredactor.RedactingFilter(
                 filters,
                 default_mask='****',
-                mask_keys={'phonenumber',}
+                mask_keys={'phonenumber', }
             )
         )
         return logger
