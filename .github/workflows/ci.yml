@@ -7,24 +7,6 @@ on:
     types: [created]
 
 jobs:
-  tag:
-    if: github.event_name == 'release'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-      - name: Set up Git config
-        run: |
-          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
-          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
-      - name: Get release title
-        id: get_release
-        run: echo "RELEASE_TITLE=$(echo '${{ github.event.release.name }}' | tr ' ' '-')" >> $GITHUB_ENV
-      - name: Create tag
-        run: |
-          git tag -a "${{ env.RELEASE_TITLE }}" -m "Version ${{ env.RELEASE_TITLE }} created by GitHub Actions"
-          git push origin "${{ env.RELEASE_TITLE }}"
-
   test-pytest:
     needs: tag
     runs-on: ubuntu-latest
@@ -61,8 +43,28 @@ jobs:
       - name: Run flake8
         run: tox -e flake8
 
+    tag:
+      if: github.event_name == 'release'
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check out repository
+          uses: actions/checkout@v2
+        - name: Set up Git config
+          run: |
+            git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
+            git config --global user.name "${{ secrets.GIT_USER_NAME }}"
+        - name: Get release title and version
+          id: get_release
+          run: |
+            VERSION=$(echo '${{ github.event.release.name }}' | tr ' ' '-')
+            echo "RELEASE_VERSION=${VERSION}" >> $GITHUB_ENV
+        - name: Create tag
+          run: |
+            git tag -a "${{ env.RELEASE_VERSION }}" -m "Version ${{ env.RELEASE_VERSION }} created by GitHub Actions"
+            git push origin "${{ env.RELEASE_VERSION }}"
+  
   testpypi-package:
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
     needs: tag
     runs-on: ubuntu-latest
     steps:
@@ -71,6 +73,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - name: Set environment variables
+        run: echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
       - name: Install dependencies
         run: pip install twine wheel
       - name: Build package
@@ -81,10 +85,11 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.TEST_PYPI_USER }}
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: twine upload --repository testpypi dist/*
 
   pypi-package:
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'release' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     needs: tag
     runs-on: ubuntu-latest
     steps:
@@ -93,6 +98,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - name: Set environment variables
+        run: echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
       - name: Install dependencies
         run: pip install twine wheel
       - name: Build package
@@ -103,4 +110,5 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USER }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: twine upload dist/*
