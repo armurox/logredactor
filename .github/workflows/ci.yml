@@ -42,6 +42,7 @@ jobs:
         run: tox -e flake8
 
   tag:
+    if: github.event_name == 'release' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
