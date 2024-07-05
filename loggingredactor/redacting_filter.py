@@ -23,7 +23,7 @@ class RedactingFilter(logging.Filter):
         for k, content in d.items():
             if k not in self.ignore_keys:
                 d[k] = self.redact(content, k)
-        
+
         # update the original record
         for k, v in d.items():
             setattr(record, k, v)
@@ -41,8 +41,8 @@ class RedactingFilter(logging.Filter):
                 content_copy = [self.redact(value) for value in content_copy]
 
             elif isinstance(content, tuple):
-                content_copy= tuple(self.redact(value) for value in content_copy)
-    
+                content_copy = tuple(self.redact(value) for value in content_copy)
+
             elif key and key in self._mask_keys:
                 content_copy = self._default_mask
 
