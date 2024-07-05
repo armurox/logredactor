@@ -11,7 +11,9 @@ class RedactingFilter(logging.Filter):
         'processName', 'args',
     }
 
-    def __init__(self, patterns, default_mask='****', mask_keys={}):
+    def __init__(self, patterns, default_mask='****', mask_keys=None):
+        if mask_keys is None:
+            mask_keys = {}
         super(RedactingFilter, self).__init__()
         self._patterns = patterns
         self._default_mask = str(default_mask)
