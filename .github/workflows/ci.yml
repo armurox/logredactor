@@ -52,7 +52,15 @@ jobs:
       - name: Get version from setup.py
         id: get_version
         run: echo "::set-output name=version::$(python setup.py --version)"
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "refs/tags/${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "Tag already exists"
+            exit 0
+          fi
       - name: Create tag
+        if: steps.check_tag.outcome == 'success'
         run: |
           git tag -a ${{ steps.get_version.outputs.version }} -m "Version created by GitHub Actions"
           git push origin ${{ steps.get_version.outputs.version }}
