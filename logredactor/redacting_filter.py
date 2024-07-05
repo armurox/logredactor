@@ -4,12 +4,14 @@ import logging
 
 class RedactingFilter(logging.Filter):
     # Do not try and redact the built in values. With the wrong regex it can break the logging
-    ignore_keys = [
+    ignore_keys = set(
         'name', 'levelname', 'levelno', 'pathname', 'filename', 'module',
         'exc_info', 'exc_text', 'stack_info', 'lineno', 'funcName', 'created',
         'msecs', 'relativeCreated', 'thread', 'threadName', 'process',
         'processName', 'args',
-    ]
+    )
+
+    keys = set()  # Specify keys to redact by
 
     def __init__(self, patterns, default_mask='****'):
         super(RedactingFilter, self).__init__()
@@ -35,7 +37,7 @@ class RedactingFilter(logging.Filter):
         if content:
             if isinstance(content, dict):
                 for k, v in content.items():
-                    content[k] = self.redact(v)
+                    content[k] = self.redact(v) if k not in self.keys else self._default_mask
 
             elif isinstance(content, (list, tuple)):
                 for i, v in enumerate(content):
