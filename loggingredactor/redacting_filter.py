@@ -12,12 +12,10 @@ class RedactingFilter(logging.Filter):
     }
 
     def __init__(self, patterns, default_mask='****', mask_keys=None):
-        if mask_keys is None:
-            mask_keys = {}
         super(RedactingFilter, self).__init__()
         self._patterns = patterns
         self._default_mask = str(default_mask)
-        self._mask_keys = set(mask_keys)
+        self._mask_keys = set(mask_keys or {})
 
     def filter(self, record):
         d = vars(record)
@@ -44,7 +42,7 @@ class RedactingFilter(logging.Filter):
                 for i, v in enumerate(content):
                     content[i] = self.redact(v)
 
-            elif key in self._mask_keys:
+            elif key and key in self._mask_keys:
                 content = self._default_mask
 
             else:
