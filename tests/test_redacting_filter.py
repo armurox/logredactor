@@ -1,7 +1,7 @@
 import re
 import pytest
 import logging
-import logredactor
+import loggingredactor
 
 
 @pytest.fixture
@@ -10,7 +10,7 @@ def logger_setup(request):
         # Use the test functions name to get a unique logger for that test
         logger = logging.getLogger(request.node.name)
         logger.addFilter(
-            logredactor.RedactingFilter(
+            loggingredactor.RedactingFilter(
                 filters,
                 default_mask='****',
                 mask_keys={'phonenumber',}
