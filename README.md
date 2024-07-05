@@ -52,7 +52,7 @@ logger.error("Request Failed", extra={'url': 'https://example.com?api_key=my-sec
 # Output: {"name": "__main__", "message": "Request Failed", "url": "https://example.com?api_key=****"}
 ```
 
-You can also redact by dictionary keys, rather than by regex, in cases where certain fields should always be redacted. To achieve this, you can provide any iterable represeting the keys that you would like to redact on. An exaple is shown below: 
+You can also redact by dictionary keys, rather than by regex, in cases where certain fields should always be redacted. To achieve this, you can provide any iterable representing the keys that you would like to redact on. An example is shown below: 
 
 ```python
 import re
