@@ -56,11 +56,12 @@ jobs:
         id: check_tag
         run: |
           if git rev-parse "refs/tags/${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
-            echo "Tag already exists"
-            exit 0
+            echo "tag_exists=true" >> $GITHUB_ENV
+          else
+            echo "tag_exists=false" >> $GITHUB_ENV
           fi
       - name: Create tag
-        if: steps.check_tag.outcome == 'success'
+        if: env.tag_exists == 'false'
         run: |
           git tag -a ${{ steps.get_version.outputs.version }} -m "Version created by GitHub Actions"
           git push origin ${{ steps.get_version.outputs.version }}
