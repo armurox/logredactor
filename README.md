@@ -1,7 +1,14 @@
 # Logging Redactor
 
-Redacts data in python logs based on regex filters or dictionary keys passed in by the user.  
-This will work with json logging formats as well and also with nested data in the `extra` argument. 
+Logging Redactor is a Python library designed to redact sensitive data in logs based on regex patterns or dictionary keys. It supports JSON logging formats and handles nested data in the `extra` argument, as well as arguments provided to the logger message.
+
+## Installation
+
+You can install Logging Redactor via pip:
+
+```
+pip install loggingredactor
+```
 
 
 # Examples
@@ -81,3 +88,12 @@ logger = logging.getLogger(__name__)
 logger.info("User %(firstname)s with email: %s and password: %s bought some food!", {'firstname': 'Arman', 'email': 'arman_jasuja@yahoo.com', 'password': '1234567'})
 # Output: {"name": "__main__", "message": "User Arman with email: **** and password: **** bought some food"}
 ```
+The above example also illustrates the logger redacting arguments provided to the message.
+
+Patch Notes (v0.0.1-alpha2):
+
+- Added ability to redact by key, not just by regex.
+- Optimized checks that identified elements of the logger object to apply the redaction rule to.
+- Fixed bugs that mutated variables in place when redacting data (specific to dictionaries and lists).
+- Added support for tuples to be provided as variables to log.
+- Added support for logger message arguments to be amone the redacted elements.
