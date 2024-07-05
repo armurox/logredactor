@@ -11,7 +11,7 @@ setup(
     packages=find_packages(),
     version="0.0.1",
     url="https://github.com/armurox/loggingredactor",
-    description="Redact logs based on regex filters and keys",
+    description="Redact data in logs based on regex filters and keys",
     long_description=long_description,
     long_description_content_type="text/markdown",
 )
