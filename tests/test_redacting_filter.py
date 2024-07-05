@@ -41,8 +41,8 @@ def test_arg_dict(caplog, logger_setup):
 
 def test_arg_dict_with_key_to_remove(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo %s", {'phonenumber': '123'})
-    assert caplog.records[0].message == "foo {'phonenumber': '****'}"
+    logger.warning("foo %(phonenumber)s %(firstname)s", {'phonenumber': '123', 'firstname': 'Arman'})
+    assert caplog.records[0].message == "foo **** Arman"
 
 
 def test_extra_string_value(caplog, logger_setup):
