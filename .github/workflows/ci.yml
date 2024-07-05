@@ -56,12 +56,8 @@ jobs:
           echo "::set-output name=version::$VERSION"
       - name: Create tag
         run: |
-          if ! git rev-parse "refs/tags/${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
-            git tag -a ${{ steps.get_version.outputs.version }} -m "Version created by GitHub Actions"
-            git push origin ${{ steps.get_version.outputs.version }}
-          else
-            echo "Tag ${{ steps.get_version.outputs.version }} already exists, skipping creation."
-          fi
+          git tag -a ${{ steps.get_version.outputs.version }} -m "Version created by GitHub Actions"
+          git push origin ${{ steps.get_version.outputs.version }}
 
   testpypi-package:
     if: github.event_name == 'release'
