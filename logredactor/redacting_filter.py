@@ -42,7 +42,7 @@ class RedactingFilter(logging.Filter):
                 for i, v in enumerate(content):
                     content[i] = self.redact(v)
             
-            elif key in self._mask_keys:
+            elif key and key in self._mask_keys:
                     content = self._default_mask
 
             else:
