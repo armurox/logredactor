@@ -17,7 +17,7 @@ logger = logging.getLogger()
 redact_patterns = [re.compile(r'\d+')]
 
 # if no `default_mask` is passed in, 4 asterisks will be used
-logger.addFilter(logredactor.RedactingFilter(redact_patterns, default_mask='xx'))
+logger.addFilter(loggingredactor.RedactingFilter(redact_patterns, default_mask='xx'))
 
 logger.warning("This is a test 123...")
 # Output: This is a test xx...
@@ -37,7 +37,7 @@ redact_patterns = [re.compile(r'(?<=api_key=)[\w-]+')]
 class RedactStreamHandler(logging.StreamHandler):
     def __init__(self, *args, **kwargs):
         logging.StreamHandler.__init__(self, *args, **kwargs)
-        self.addFilter(logredactor.RedactingFilter(redact_patterns))
+        self.addFilter(loggingredactor.RedactingFilter(redact_patterns))
 
 root_logger = logging.getLogger()
 
@@ -67,7 +67,7 @@ redact_keys = ['email', 'password']
 class RedactStreamHandler(logging.StreamHandler):
     def __init__(self, *args, **kwargs):
         logging.StreamHandler.__init__(self, *args, **kwargs)
-        self.addFilter(logredactor.RedactingFilter(redact_patterns, mask_keys=redact_keys))
+        self.addFilter(loggingredactor.RedactingFilter(redact_patterns, mask_keys=redact_keys))
 
 root_logger = logging.getLogger()
 
