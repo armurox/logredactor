@@ -23,44 +23,68 @@ def logger_setup(request):
 
 def test_no_args(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{2}')])
-    logger.warning("foo12bar")
+    temp = "foo12bar"
+    logger.warning(temp)
     assert caplog.records[0].message == "foo****bar"
+    assert temp == "foo12bar"
 
 
-def test_arg_tuple(caplog, logger_setup):
+def test_arg_multiple(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo %s-%s", '123', '4567')
+    num1 = '123'
+    num2 = '4567'
+    logger.warning("foo %s-%s", num1, num2)
     assert caplog.records[0].message == "foo ****-****7"
+    assert num1 == '123'
+    assert num2 == '4567'
+
+
+def test_arg_list(caplog, logger_setup):
+    logger = logger_setup([re.compile(r'\d{3}')])
+    nums = ['123', '4567']
+    logger.warning("foo %s", nums)
+    assert caplog.records[0].message == "foo ['****', '****7']"
+    assert nums == ['123', '4567']
 
 
 def test_arg_dict(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo %(bar)s", {'bar': '123'})
-    assert caplog.records[0].message == "foo ****"
+    bar = {'bar': '123'}
+    logger.warning("foo %s", bar)
+    assert caplog.records[0].message == "foo {'bar': '****'}"
+    assert bar == {'bar': '123'}
 
 
 def test_arg_dict_with_key_to_remove(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo %(phonenumber)s %(firstname)s", {'phonenumber': '123', 'firstname': 'Arman'})
+    dict_keys = {'phonenumber': '123', 'firstname': 'Arman'}
+    logger.warning("foo %(phonenumber)s %(firstname)s", dict_keys)
     assert caplog.records[0].message == "foo **** Arman"
+    assert dict_keys == {'phonenumber': '123', 'firstname': 'Arman'}
 
 
 def test_extra_string_value(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo", extra={'bar': '123 too'})
+    bar_extra = {'bar': '123 too'}
+    logger.warning("foo", extra=bar_extra)
     assert caplog.records[0].bar == "**** too"
+    assert bar_extra == {'bar': '123 too'}
 
 
 def test_extra_int_value(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo", extra={'bar': 123})
+    bar = {'bar': 123}
+    logger.warning("foo", extra=bar)
     assert caplog.records[0].bar == "****"
+    assert bar == {'bar': 123}
 
 
 def test_extra_float_value(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo", extra={'bar': 123.6})
+    bar = {'bar': 123.6}
+    logger.warning("foo", extra=bar)
     assert caplog.records[0].bar == "****.6"
+    assert bar == {'bar': 123.6}
 
 
 def test_extra_nested_dict(caplog, logger_setup):
@@ -72,12 +96,27 @@ def test_extra_nested_dict(caplog, logger_setup):
     }
     logger.warning("foo", extra=extra_data)
     assert caplog.records[0].bar['api_key'] == "key=****"
+    assert extra_data == {
+        'bar': {
+            'api_key': 'key=123',
+        },
+    }
+
+
+def test_extra_do_redact_key(caplog, logger_setup):
+    logger = logger_setup([re.compile(r'\d{3}')])
+    extra_data = {'thing987': '123'}
+    logger.warning("foo", extra=extra_data)
+    assert caplog.records[0].thing987 == "****"
+    extra_data = {'thing987': '123'}
 
 
 def test_extra_do_not_redact_key(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo", extra={'thing987': 'foobar'})
+    extra_data = {'thing987': 'foobar'}
+    logger.warning("foo", extra=extra_data)
     assert caplog.records[0].thing987 == "foobar"
+    extra_data = {'thing987': 'foobar'}
 
 
 def test_extra_nested_dict_with_list(caplog, logger_setup):
@@ -90,6 +129,11 @@ def test_extra_nested_dict_with_list(caplog, logger_setup):
     logger.warning("foo", extra=extra_data)
     assert caplog.records[0].bar['thing'][0] == 'one'
     assert caplog.records[0].bar['thing'][1] == '****'
+    assert extra_data == {
+        'bar': {
+            'thing': ['one', '456'],
+        },
+    }
 
 
 def test_match_group(caplog, logger_setup):
@@ -97,11 +141,15 @@ def test_match_group(caplog, logger_setup):
     # But this shows the use of a Positive Lookbehind
     # https://www.regextutorial.org/positive-and-negative-lookbehind-assertions.php
     logger = logger_setup([re.compile(r'(?<=api_key=)[\w-]+')])
-    logger.warning("example.com?api_key=this-is-my-key&sort=price")
+    message = "example.com?api_key=this-is-my-key&sort=price"
+    logger.warning(message)
     assert caplog.records[0].message == "example.com?api_key=****&sort=price"
+    message = "example.com?api_key=this-is-my-key&sort=price"
 
 
 def test_extra_do_redact_specific_key(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
-    logger.warning("foo", extra={'phonenumber': 'foobar'})
+    phonenumber = {'phonenumber': 'foobar'}
+    logger.warning("foo", extra=phonenumber)
     assert caplog.records[0].phonenumber == "****"
+    assert phonenumber == {'phonenumber': 'foobar'}
