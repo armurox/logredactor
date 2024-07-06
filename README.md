@@ -90,6 +90,40 @@ logger.warning("User %(firstname)s with email: %(email)s and password: %(passwor
 ```
 The above example also illustrates the logger redacting positional arguments provided to the message.
 
+### Integrating with already built logger configs
+Logging Redactor also integrates quite well with already created logging configurations, for example, say you have your logging config set up in the following format:
+```python
+import re
+import loggingredactor
+import logging
+... # Other imports
+LOGGING = {
+    ... # Your other configs
+    'filters':{ 
+        ... # Some configs
+        'pii': {
+            '()': 'loggingredactor.RedactingFilter',
+            'pii_keys': ('password', 'email', 'last_name', 'first_name', 'gender', 'lastname', 'firstname',),
+            'pii_patterns': (re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'), ) # email regex
+        },
+        ... # Some other configs
+    }
+    'handlers': {
+        ... # Some handlers
+        'stdout': {
+            ... # Some configs
+            'filters': ['pii', ...],
+        },
+        ... # Other handlers (add pii as a filter to all the ones where you want the appropriate information to be redacted)
+    }
+    ... # Rest of your configs
+}
+
+logging.config.dictConfig(config)
+... # User your logger as normal, the redaction will now be applied.
+```
+The essence boils down to adding the RedactingFilter to your logging config, and to the filters section of the associated handlers to which you want to apply the redaction.
+
 ## Patch Notes (v0.0.1-beta1):
 
 - Added ability to redact by key, not just by regex for extra field.
