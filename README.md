@@ -1,6 +1,6 @@
 # Logging Redactor
 
-Logging Redactor is a Python library designed to redact sensitive data in logs based on regex patterns or dictionary keys. It supports JSON logging formats and handles nested data in the `extra` argument, as well as arguments provided to the logger message.
+Logging Redactor is a Python library designed to redact sensitive data in logs based on regex patterns or dictionary keys. It supports JSON logging formats and handles nested data at the message level, at the positional argument level and also in the `extra` keyword argument.
 
 ## Installation
 
@@ -11,7 +11,7 @@ pip install loggingredactor
 ```
 
 
-# Examples
+## Illustrative Examples
 
 ```python
 import re
@@ -74,7 +74,7 @@ redact_keys = ['email', 'password']
 class RedactStreamHandler(logging.StreamHandler):
     def __init__(self, *args, **kwargs):
         logging.StreamHandler.__init__(self, *args, **kwargs)
-        self.addFilter(loggingredactor.RedactingFilter(redact_patterns, mask_keys=redact_keys))
+        self.addFilter(loggingredactor.RedactingFilter(mask_keys=redact_keys))
 
 root_logger = logging.getLogger()
 
@@ -85,15 +85,17 @@ root_logger.addHandler(sys_stream)
 
 logger = logging.getLogger(__name__)
 
-logger.info("User %(firstname)s with email: %s and password: %s bought some food!", {'firstname': 'Arman', 'email': 'arman_jasuja@yahoo.com', 'password': '1234567'})
+logger.warning("User %(firstname)s with email: %(email)s and password: %(password)s bought some food!", {'firstname': 'Arman', 'email': 'arman_jasuja@yahoo.com', 'password': '1234567'})
 # Output: {"name": "__main__", "message": "User Arman with email: **** and password: **** bought some food"}
 ```
-The above example also illustrates the logger redacting arguments provided to the message.
+The above example also illustrates the logger redacting positional arguments provided to the message.
 
-Patch Notes (v0.0.1-alpha2):
+## Patch Notes (v0.0.1-beta1):
 
-- Added ability to redact by key, not just by regex.
+- Added ability to redact by key, not just by regex for extra field.
 - Optimized checks that identified elements of the logger object to apply the redaction rule to.
 - Fixed bugs that mutated variables in place when redacting data (specific to dictionaries and lists).
-- Added support for tuples to be provided as variables to log.
+- Added support for tuples to be provided as arguments to the logger.
 - Added support for logger message arguments to be amone the redacted elements.
+- Added support for python 3.8+ (3.8 - 3.12).
+- Added support to redact by key for positional arguments.

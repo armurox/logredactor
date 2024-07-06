@@ -6,7 +6,7 @@ import loggingredactor
 
 @pytest.fixture
 def logger_setup(request):
-    def get_logger(filters):
+    def get_logger(filters=''):
         # Use the test functions name to get a unique logger for that test
         logger = logging.getLogger(request.node.name)
         logger.addFilter(
@@ -19,6 +19,14 @@ def logger_setup(request):
         return logger
 
     return get_logger
+
+
+def test_no_args_and_no_pattern(caplog, logger_setup):
+    logger = logger_setup()
+    temp = "foo12bar"
+    logger.warning(temp)
+    assert caplog.records[0].message == "foo12bar"
+    assert temp == "foo12bar"
 
 
 def test_no_args(caplog, logger_setup):
@@ -56,7 +64,7 @@ def test_arg_dict(caplog, logger_setup):
 
 
 def test_arg_dict_with_key_to_remove(caplog, logger_setup):
-    logger = logger_setup([re.compile(r'\d{3}')])
+    logger = logger_setup()
     dict_keys = {'phonenumber': '123', 'firstname': 'Arman'}
     logger.warning("foo %(phonenumber)s %(firstname)s", dict_keys)
     assert caplog.records[0].message == "foo **** Arman"
