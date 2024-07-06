@@ -40,7 +40,7 @@ jobs:
         run: ruff check .
 
   testpypi-package:
-    if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
+    if: github.event.release.prerelease == true
     needs: [pytest, lint]
     runs-on: ubuntu-latest
     steps:
@@ -70,7 +70,7 @@ jobs:
         run: twine upload --repository testpypi dist/*
 
   pypi-package:
-    if: github.event_name == 'release' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: github.event.release.prerelease == false
     needs: [pytest, lint]
     runs-on: ubuntu-latest
     steps:
