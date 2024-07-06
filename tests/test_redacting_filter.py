@@ -71,6 +71,22 @@ def test_arg_dict_with_key_to_remove(caplog, logger_setup):
     assert dict_keys == {'phonenumber': '123', 'firstname': 'Arman'}
 
 
+def test_arg_nested_dict(caplog, logger_setup):
+    logger = logger_setup([re.compile(r'\d{3}')])
+    bar = {
+        'bar': {
+            'api_key': 'key=123',
+        },
+    }
+    logger.warning("foo %(bar)s", bar)
+    assert caplog.records[0].message == "foo {'api_key': 'key=****'}"
+    assert bar == {
+        'bar': {
+            'api_key': 'key=123',
+        },
+    }
+
+
 def test_extra_string_value(caplog, logger_setup):
     logger = logger_setup([re.compile(r'\d{3}')])
     bar_extra = {'bar': '123 too'}
