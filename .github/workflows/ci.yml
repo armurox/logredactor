@@ -39,7 +39,7 @@ jobs:
       - name: Run Ruff
         run: ruff check .
 
- determine-branch:
+  determine-branch:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
