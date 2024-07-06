@@ -26,7 +26,7 @@ jobs:
     - name: Run pytest
       run: tox
 
-  test-flake8:
+  test-ruff:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,14 +34,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Install dependencies
-        run: |
-          pip install tox
-      - name: Install loggingredactor
-        run: |
-          pip install -e .
-      - name: Run flake8
-        run: tox -e flake8
+      - name: Install Ruff
+        run: pip install ruff
+      - name: Run Ruff
+        run: ruff check .
 
   testpypi-package:
     if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
