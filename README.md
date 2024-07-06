@@ -141,5 +141,5 @@ The essence boils down to adding the RedactingFilter to your logging config, and
 - The added support for tuples is technically a bug fix, as it was meant to be present in the original release.
 
 
-## Note:
-Logging Redactor started as a fork of [logredactor](https://pypi.org/project/logredactor/). However, due to the bugs present in the original (specifically the data mutations), it was not quite usable in production. This, along with the fact that the original package is no longer maintained lead to the creation of Logging Redactor.
+## A Note about the Motivation behind Logging Redactor:
+Logging Redactor started as a fork of [logredactor](https://pypi.org/project/logredactor/). However, due to the bugs present in the original (specifically the data mutations), it was not usable in production environments where the purpose was to only redact variables in the logs, not in their usage in the code. This, along with the fact that the original package is no longer maintained lead to the creation of Logging Redactor.
