@@ -53,7 +53,7 @@ jobs:
   
   testpypi-package:
     if: github.event_name == 'release' && env.branch != 'refs/heads/main' && env.branch != 'refs/heads/master'
-    needs: [pytest, lint]
+    needs: [pytest, lint, determine-branch]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -83,7 +83,7 @@ jobs:
 
   pypi-package:
     if: github.event_name == 'release' && (env.branch == 'refs/heads/main' || env.branch == 'refs/heads/master')
-    needs: [pytest, lint]
+    needs: [pytest, lint, determine-branch]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
