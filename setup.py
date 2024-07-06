@@ -21,4 +21,15 @@ setup(
     description="Redact data in logs based on regex filters and keys",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    author="Arman Jasuja",
+    author_email="arman_jasuja@yahoo.com",
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries",
+    ],
+    python_requires='>=3.6',
 )
