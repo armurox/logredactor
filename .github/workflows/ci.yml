@@ -11,10 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python versions
+      - name: Set up Python 3.7
         uses: actions/setup-python@v2
         with:
-          python-versions: [3.7, 3.8]
+          python-versions: 3.7
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-versions: 3.8
       - name: Install dependencies
         run: |
           pip install tox
