@@ -39,15 +39,20 @@ jobs:
       - name: Run Ruff
         run: ruff check .
 
-  debug:
+ determine-branch:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - name: Check github.ref
-        run: echo "github.ref is ${{ github.base_ref }}"
+      - uses: actions/checkout@v2
+      - name: Get branch name
+        run: |
+          chmod +x ./get-branch-name.sh
+          ./get-branch-name.sh
+      - name: Output branch name
+        run: echo "Branch is ${{ env.branch }}"
   
   testpypi-package:
-    if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
+    if: github.event_name == 'release' && env.branch != 'refs/heads/main' && env.branch != 'refs/heads/master'
     needs: [pytest, lint]
     runs-on: ubuntu-latest
     steps:
@@ -77,7 +82,7 @@ jobs:
         run: twine upload --repository testpypi dist/*
 
   pypi-package:
-    if: github.event_name == 'release' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: github.event_name == 'release' && (env.branch == 'refs/heads/main' || env.branch == 'refs/heads/master')
     needs: [pytest, lint]
     runs-on: ubuntu-latest
     steps:
