@@ -7,7 +7,7 @@ on:
     types: [created]
 
 jobs:
-  test-pytest:
+  pytest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,14 +26,14 @@ jobs:
     - name: Run pytest
       run: tox
 
-  test-ruff:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7
+      - name: Set up Python '3.10'
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: '3.10'
       - name: Install Ruff
         run: pip install ruff
       - name: Run Ruff
@@ -41,7 +41,7 @@ jobs:
 
   testpypi-package:
     if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
-    needs: [test-pytest, test-flake8]
+    needs: [pytest, lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -71,7 +71,7 @@ jobs:
 
   pypi-package:
     if: github.event_name == 'release' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    needs: [test-pytest, test-flake8]
+    needs: [pytest, lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
