@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Install dependencies
         run: |
           pip install tox
@@ -22,7 +22,7 @@ jobs:
         run: |
           pip install -e .
       - name: Run pytest
-        run: tox -e py37
+        run: tox -e py38
 
   test-flake8:
     runs-on: ubuntu-latest
