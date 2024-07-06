@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check github.ref
-        run: echo "github.ref is ${{ github.ref }}"
+        run: echo "github.ref is ${{ github.base_ref }}"
   
   testpypi-package:
     if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
