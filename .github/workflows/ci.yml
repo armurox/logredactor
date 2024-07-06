@@ -7,7 +7,7 @@ on:
     types: [created]
 
 jobs:
-  test-pytest-py38:
+  test-pytestpy38:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
