@@ -39,6 +39,13 @@ jobs:
       - name: Run Ruff
         run: ruff check .
 
+  debug:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check github.ref
+        run: echo "github.ref is ${{ github.ref }}"
+  
   testpypi-package:
     if: github.event_name == 'release' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
     needs: [pytest, lint]
