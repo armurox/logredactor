@@ -37,22 +37,12 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          pip install tox
+          pip install tox tox-gh-actions
       - name: Install loggingredactor
         run: |
           pip install -e .
-      - name: Run pytest for Python 3.7
-        run: tox -e py37
-      - name: Run pytest for Python 3.8
-        run: tox -e py38
-      - name: Run pytest for Python 3.9
-        run: tox -e py39
-      - name: Run pytest for Python 3.10
-        run: tox -e py310
-      - name: Run pytest for Python 3.11
-        run: tox -e py311
-      - name: Run pytest for Python 3.12
-        run: tox -e py312
+      - name: Run pytest
+        run: tox
 
   test-flake8:
     runs-on: ubuntu-latest
