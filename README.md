@@ -1,6 +1,6 @@
 # Logging Redactor
-![TestPyPI version](https://img.shields.io/badge/dynamic/json?color=blue&label=TestPyPI&prefix=v&query=info.version&url=https%3A%2F%2Ftest.pypi.org%2Fpypi%2Floggingredactor%2Fjson)
-![Supported Python versions](https://img.shields.io/badge/dynamic/json?color=blue&label=Python&query=%24.info.classifiers[?@.startsWith(%27Programming%20Language%20::%20Python%27)]&url=https%3A%2F%2Ftest.pypi.org%2Fpypi%2Floggingredactor%2Fjson&prefix=python:&suffix=)
+![PyPI version](https://img.shields.io/pypi/v/loggingredactor.svg)
+![Supported Python versions](https://img.shields.io/pypi/pyversions/loggingredactor.svg)
 
 Logging Redactor is a Python library designed to redact sensitive data in logs based on regex patterns or dictionary keys. It supports JSON logging formats and handles nested data at the message level, at the positional argument level and also in the `extra` keyword argument.
 
