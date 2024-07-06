@@ -10,8 +10,9 @@ You can install Logging Redactor via pip:
 pip install loggingredactor
 ```
 
-
 ## Illustrative Examples
+
+Below is a basic example that illustrates how to redact any digits in a logger message:
 
 ```python
 import re
@@ -59,7 +60,7 @@ logger.error("Request Failed", extra={'url': 'https://example.com?api_key=my-sec
 # Output: {"name": "__main__", "message": "Request Failed", "url": "https://example.com?api_key=****"}
 ```
 
-You can also redact by dictionary keys, rather than by regex, in cases where certain fields should always be redacted. To achieve this, you can provide any iterable representing the keys that you would like to redact on. An example is shown below: 
+You can also redact by dictionary keys, rather than by regex, in cases where certain fields should always be redacted. To achieve this, you can provide any iterable representing the keys that you would like to redact on. An example is shown below (this time with a different default mask): 
 
 ```python
 import re
@@ -74,7 +75,7 @@ redact_keys = ['email', 'password']
 class RedactStreamHandler(logging.StreamHandler):
     def __init__(self, *args, **kwargs):
         logging.StreamHandler.__init__(self, *args, **kwargs)
-        self.addFilter(loggingredactor.RedactingFilter(mask_keys=redact_keys))
+        self.addFilter(loggingredactor.RedactingFilter(default_mask='REDACTED', mask_keys=redact_keys))
 
 root_logger = logging.getLogger()
 
@@ -86,7 +87,7 @@ root_logger.addHandler(sys_stream)
 logger = logging.getLogger(__name__)
 
 logger.warning("User %(firstname)s with email: %(email)s and password: %(password)s bought some food!", {'firstname': 'Arman', 'email': 'arman_jasuja@yahoo.com', 'password': '1234567'})
-# Output: {"name": "__main__", "message": "User Arman with email: **** and password: **** bought some food"}
+# Output: {"name": "__main__", "message": "User Arman with email: REDACTED and password: REDACTED bought some food"}
 ```
 The above example also illustrates the logger redacting positional arguments provided to the message.
 
@@ -105,6 +106,7 @@ LOGGING = {
             '()': 'loggingredactor.RedactingFilter',
             'pii_keys': ('password', 'email', 'last_name', 'first_name', 'gender', 'lastname', 'firstname',),
             'pii_patterns': (re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'), ) # email regex
+            'default_mask': 'REDACTED',
         },
         ... # Some other configs
     }
@@ -124,12 +126,20 @@ logging.config.dictConfig(config)
 ```
 The essence boils down to adding the RedactingFilter to your logging config, and to the filters section of the associated handlers to which you want to apply the redaction.
 
-## Patch Notes (v0.0.1-beta1):
+## Release Notes - v0.0.1:
 
+### Improvements
 - Added ability to redact by key, not just by regex for extra field.
-- Optimized checks that identified elements of the logger object to apply the redaction rule to.
-- Fixed bugs that mutated variables in place when redacting data (specific to dictionaries and lists).
-- Added support for tuples to be provided as arguments to the logger.
-- Added support for logger message arguments to be amone the redacted elements.
-- Added support for python 3.8+ (3.8 - 3.12).
 - Added support to redact by key for positional arguments.
+- Optimized checks that identified elements of the logger object to apply the redaction rule to.
+- Added support for tuples to be provided as arguments to the logger.
+- Added support for logger message arguments to be among the redacted elements.
+- Added support for python 3.8+ (3.8 - 3.12).
+
+## Bug fixes:
+- Fixed bugs that mutated variables in place when redacting data (specific to dictionaries, lists and tuples).
+- The added support for tuples is technically a bug fix, as it was meant to be present in the original release.
+
+
+## Note:
+Logging Redactor started as a fork of [logredactor](https://pypi.org/project/logredactor/). However, due to the bugs present in the original (specifically the data mutations), it was not quite usable in production. This, along with the fact that the original package is no longer maintained lead to the creation of Logging Redactor.
