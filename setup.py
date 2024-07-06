@@ -16,10 +16,14 @@ version = os.getenv('RELEASE_VERSION', '0.0.1')  # Default to '0.0.1' if RELEASE
 split_version = version.split('-')
 if len(split_version) == 2:
     release_mode = split_version[1][0].upper()
-    status = split_version[1][-1] + ' - ' + release_mode
-    status += 'lpha' if release_mode == 'A' else 'eta'
+    status = {
+        'P': '1 - Planning',
+        'R': '2 - Pre-Alpha',
+        'A': '3 - Alpha',
+        'B': '4 - Beta'
+    }.get(release_mode)
 else:
-    status = 'Production'
+    status = '5 - Production/Stable'
 
 setup(
     name="loggingredactor",
