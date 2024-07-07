@@ -19,14 +19,10 @@ class RedactingFilter(logging.Filter):
         self._mask_keys = set(mask_keys or {})
 
     def filter(self, record):
-        d = copy.deepcopy(vars(record))
+        d = vars(record)
         for k, content in d.items():
             if k not in self.ignore_keys:
                 d[k] = self.redact(content, k)
-
-        # update the original record
-        for k, v in d.items():
-            setattr(record, k, v)
 
         return True
 

@@ -138,7 +138,7 @@ The essence boils down to adding the RedactingFilter to your logging config, and
 - Added support for logger message arguments to be among the redacted elements.
 - Added support for python 3.8+ (3.8 - 3.12).
 
-## Bug fixes:
+### Bug fixes:
 - Fixed bugs that mutated variables in place when redacting data (specific to dictionaries, lists and tuples).
 - The added support for tuples is technically a bug fix, as it was meant to be present in the original release.
 
