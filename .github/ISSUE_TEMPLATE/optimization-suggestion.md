@@ -1,5 +1,5 @@
 ---
-name: Optimization request
+name: Optimization suggestion
 about: Suggest ways to improve the performance of this project
 title: ''
 labels: ''
