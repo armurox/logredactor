@@ -70,7 +70,7 @@ import logging
 import loggingredactor
 from pythonjsonlogger import jsonlogger
 
-# Create a pattern to hide api key in url. This uses a _Positive Lookbehind_
+# This list now contains all the dictioanry keys that will have their values redacted in the logger object
 redact_keys = ['email', 'password']
 
 # Override the logging handler that you want redacted
@@ -128,19 +128,11 @@ logging.config.dictConfig(config)
 ```
 The essence boils down to adding the RedactingFilter to your logging config, and to the filters section of the associated handlers to which you want to apply the redaction.
 
-## Release Notes - v0.0.1:
+
+## Release Notes - v0.0.2:
 
 ### Improvements
-- Added ability to redact by key, not just by regex for extra field.
-- Added support to redact by key for positional arguments.
-- Optimized checks that identified elements of the logger object to apply the redaction rule to.
-- Added support for tuples to be provided as arguments to the logger.
-- Added support for logger message arguments to be among the redacted elements.
-- Added support for python 3.8+ (3.8 - 3.12).
-
-### Bug fixes:
-- Fixed bugs that mutated variables in place when redacting data (specific to dictionaries, lists and tuples).
-- The added support for tuples is technically a bug fix, as it was meant to be present in the original release.
+- Optimized function that applies the redaction (was setting the logger message value twice).
 
 
 ## A Note about the Motivation behind Logging Redactor:
