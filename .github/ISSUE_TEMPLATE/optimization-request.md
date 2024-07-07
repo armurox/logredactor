@@ -1,6 +1,6 @@
 ---
 name: Optimization request
-about: Suggest wats to improve the performance of this porject
+about: Suggest ways to improve the performance of this project
 title: ''
 labels: ''
 assignees: ''
